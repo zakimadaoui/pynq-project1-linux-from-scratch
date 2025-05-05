@@ -92,6 +92,14 @@ git clone https://github.com/Xilinx/embeddedsw
 			i.make "BOARD=zc706" "CC=arm-none-eabi-gcc" "CFLAGS=-DMMC_SUPPORT"
 
 
+## Generating and compiling the device tree:
+- https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842279/Build+Device+Tree+Blob
+- https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/341082130/Quick+guide+to+Debugging+Device+Tree+Generator+Issues
+
+**Important note for the future** when desiring to extend the device tree in a yocto project or similar:
+Since the DTG uses the XSA as an input file, and the XSA only contains IPs that are in the Block Design, then for the same reason the DTS output from the DTG will only have DT nodes for the IP in the BD. A user can add include files to the device tree (similar to how this would be achieved in C/C++). These are called DTSI files. In PetaLinux, users can use the `system-user.dtsi` template to add, or modify nodes in the DT. 
+
+
 ## U-boot
 - https://docs.u-boot.org/en/latest/board/xilinx/zynq.html
 - https://github.com/Xilinx/u-boot-xlnx 

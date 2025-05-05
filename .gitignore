@@ -10,3 +10,5 @@ device-tree-xlnx
 device-tree-xlnx/*
 uboot_src
 uboot_src/*
+busybox/
+busybox/*
