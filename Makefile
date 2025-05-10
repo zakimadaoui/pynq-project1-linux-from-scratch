@@ -3,6 +3,7 @@ CROSS_COMPILE = arm-linux-gnueabihf-
 ARCH = arm
 DEVICE_TREE = zynq-pynqz2
 UBOOT_CONFIG = zynq_pynqz2_defconfig
+# UBOOT_CONFIG = xilinx_zynq_virt_defconfig
 export CROSS_COMPILE ARCH DEVICE_TREE
 
 ROOTFS_DIR=artifacts/rootfs
@@ -31,7 +32,8 @@ uboot: artifacts
 	@if [ ! -d uboot_src ]; then git clone https://github.com/Xilinx/u-boot-xlnx.git uboot_src --branch xilinx-v2024.2; fi
 
 # patch u-boot to add support for pynq-z1 and pynq-z2
-	cd uboot_src; git reset && git restore . && git clean -f && git apply ../patches/add-pynq-z1-and-z2-support-uboot.patch2
+	rm uboot_src/board/xilinx/zynq/zynq-pynqz2/ -rf
+	cd uboot_src; git reset && git restore . && git clean -f && git apply ../patches/add-pynq-z2-support-uboot.patch
 	
 	make -C uboot_src $(UBOOT_CONFIG) SHELL=/bin/bash
 	
@@ -101,8 +103,6 @@ sdcard: rootfs bootgen
 ub_image: 
 	mkimage -f pynq_z2_fit_image.its ./artifacts/image.ub
 
-autoboot:
-	mkimage -A arm -T script -C none -n "Boot script" -d boot.cmd artifacts/boot.scr
 
 
 # clean: fsbl_clean uboot_clean rootfs_clean bootgen_clean dtb_clean
