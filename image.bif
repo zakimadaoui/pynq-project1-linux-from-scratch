@@ -1,0 +1,6 @@
+my_image:
+{
+  [bootloader]artifacts/fsbl.elf
+  artifacts/bitstream.bit
+  artifacts/u-boot.elf
+}

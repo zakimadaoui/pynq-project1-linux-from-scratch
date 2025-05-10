@@ -36,6 +36,7 @@ https://github.com/Xilinx/device-tree-xlnx.git           | Device Tree generator
 https://git.kernel.org/pub/scm/utils/dtc/dtc.git         | Device Tree compiler (required to build U-Boot)
 https://github.com/Xilinx/embeddedsw.git                 | Xilinx embeddedsw repository for bare-metal applications such as FSBL, PMU Firmware, PLM
 https://pynq.readthedocs.io/en/v2.7.0/overlay_design_methodology/board_settings.html | Link to Pynq Z1 and Z2 Vivado board files  
+https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842385/How+to+format+SD+card+for+SD+boot
 
 
 
@@ -187,7 +188,7 @@ U-Boot> bootm <addr of kernel> <addr of rootfs> <addr of device tree blob (dtb)>
 Note: Make sure the kernel and root filesystem images are wrapped by with the U-Boot header. The device tree blob does not need to be wrapped with the U-Boot header.
 
 
-### Booting from SD Card
+## Booting from SD Card
 For example, when booting from MMC devices (SD card or eMMC), the following script is run from the boot.scr file by default in the Xilinx-provided U-Boot environment.  This can be modified based on your needs. 
 
 
@@ -230,6 +231,14 @@ or
 u-boot> fatload mmc 0 0x1000000 image.ub
 u-boot> bootm 0x1000000
 ```
+
+
+```
+setenv bootargs "root=/dev/mmcblk0p2 rw rootwait" # od this if the rootfs is in you sdcard..... 
+setenv bootcmd "fatload mmc 0 0x1000000 image.ub && bootm 0x1000000"
+saveenv
+```
+
 With the bootm command, U-Boot is relocating the images before it boots Linux such that the addresses above may not be what the kernel sees. U-Boot also alters the device tree to tell the kernel where the ramdisk image is located in memory (initrd-start and initrd-end). The
 bootm command sets the r2 register to the address of the device tree in memory which is not done by the go command.
 The differences and use cases of using the booti commands and the bootm command have evolved over time.  As of U-Boot 2020.01, the primary difference is in handling of uncompressed Linux Image files (common for 64-bit Arm platforms) versus compressed Linux zImage files (common on 32-bit Arm platforms) as denoted in the U-Boot help.  As a general rule of thumb, only differentiate in usage depending on Linux image type rather than solely based on architecture.
@@ -237,7 +246,13 @@ booti - boot Linux kernel 'Image' format from memory
 bootm - boot application image from memory
 
 
+## Creating the SD card
 
+```
+sudo fdisk /dev/mmcblk0
+
+
+```
 
 ## QEMU
 If you had U-Boot built for zynq_zc706:
@@ -263,3 +278,10 @@ qemu-system-arm \
   -initrd rootfs.cpio.gz \
   -append "console=ttyPS0,115200 earlyprintk"
 ```
+
+
+## Linux kernel build config:
+# Yocto KERNEL Variables
+UBOOT_ENTRYPOINT  ?= "0x200000"
+UBOOT_LOADADDRESS ?= "0x200000"
+KERNEL_EXTRA_ARGS += "UIMAGE_LOADADDR=${UBOOT_ENTRYPOINT}"

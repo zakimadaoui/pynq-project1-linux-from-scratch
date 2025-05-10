@@ -25455,10 +25455,10 @@ index 0000000000..c02b392273
 +
 diff --git a/lib/sw_apps/zynq_fsbl/misc/zynq-pynqz1/xparameters.h b/lib/sw_apps/zynq_fsbl/misc/zynq-pynqz1/xparameters.h
 new file mode 100644
-index 0000000000..24f2558aa1
+index 0000000000..112e5a8b3b
 --- /dev/null
 +++ b/lib/sw_apps/zynq_fsbl/misc/zynq-pynqz1/xparameters.h
-@@ -0,0 +1,582 @@
+@@ -0,0 +1,613 @@
 +#ifndef XPARAMETERS_H   /* prevent circular inclusions */
 +#define XPARAMETERS_H   /* by using protection macros */
 +
@@ -25933,7 +25933,7 @@ index 0000000000..24f2558aa1
 +/******************************************************************/
 +
 +/* Definitions for driver TTCPS */
-+#define XPAR_XTTCPS_NUM_INSTANCES 3U
++#define XPAR_XTTCPS_NUM_INSTANCES 6U
 +
 +/* Definitions for peripheral PS7_TTC_0 */
 +#define XPAR_PS7_TTC_0_DEVICE_ID 0U
@@ -25948,6 +25948,21 @@ index 0000000000..24f2558aa1
 +#define XPAR_PS7_TTC_2_BASEADDR 0XF8001008U
 +#define XPAR_PS7_TTC_2_TTC_CLK_FREQ_HZ 108333336U
 +#define XPAR_PS7_TTC_2_TTC_CLK_CLKSRC 0U
++
++
++/* Definitions for peripheral PS7_TTC_1 */
++#define XPAR_PS7_TTC_3_DEVICE_ID 3U
++#define XPAR_PS7_TTC_3_BASEADDR 0XF8002000U
++#define XPAR_PS7_TTC_3_TTC_CLK_FREQ_HZ 108333336U
++#define XPAR_PS7_TTC_3_TTC_CLK_CLKSRC 0U
++#define XPAR_PS7_TTC_4_DEVICE_ID 4U
++#define XPAR_PS7_TTC_4_BASEADDR 0XF8002004U
++#define XPAR_PS7_TTC_4_TTC_CLK_FREQ_HZ 108333336U
++#define XPAR_PS7_TTC_4_TTC_CLK_CLKSRC 0U
++#define XPAR_PS7_TTC_5_DEVICE_ID 5U
++#define XPAR_PS7_TTC_5_BASEADDR 0XF8002008U
++#define XPAR_PS7_TTC_5_TTC_CLK_FREQ_HZ 108333336U
++#define XPAR_PS7_TTC_5_TTC_CLK_CLKSRC 0U
 +
 +
 +/******************************************************************/
@@ -25967,6 +25982,22 @@ index 0000000000..24f2558aa1
 +#define XPAR_XTTCPS_2_BASEADDR 0xF8001008U
 +#define XPAR_XTTCPS_2_TTC_CLK_FREQ_HZ 108333336U
 +#define XPAR_XTTCPS_2_TTC_CLK_CLKSRC 0U
++
++/* Canonical definitions for peripheral PS7_TTC_1 */
++#define XPAR_XTTCPS_3_DEVICE_ID XPAR_PS7_TTC_3_DEVICE_ID
++#define XPAR_XTTCPS_3_BASEADDR 0xF8002000U
++#define XPAR_XTTCPS_3_TTC_CLK_FREQ_HZ 108333336U
++#define XPAR_XTTCPS_3_TTC_CLK_CLKSRC 0U
++
++#define XPAR_XTTCPS_4_DEVICE_ID XPAR_PS7_TTC_4_DEVICE_ID
++#define XPAR_XTTCPS_4_BASEADDR 0xF8002004U
++#define XPAR_XTTCPS_4_TTC_CLK_FREQ_HZ 108333336U
++#define XPAR_XTTCPS_4_TTC_CLK_CLKSRC 0U
++
++#define XPAR_XTTCPS_5_DEVICE_ID XPAR_PS7_TTC_5_DEVICE_ID
++#define XPAR_XTTCPS_5_BASEADDR 0xF8002008U
++#define XPAR_XTTCPS_5_TTC_CLK_FREQ_HZ 108333336U
++#define XPAR_XTTCPS_5_TTC_CLK_CLKSRC 0U
 +
 +
 +/******************************************************************/
