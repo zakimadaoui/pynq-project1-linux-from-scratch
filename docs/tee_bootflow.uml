@@ -1,0 +1,32 @@
+@startuml
+title Zynq-7000 Boot with TEE
+
+[*] --> BootROM
+
+BootROM : Load FSBL into OCM\nand execute
+
+BootROM --> FSBL : Handoff
+
+FSBL : Init clocks, DDR, MIO
+FSBL : Load PL bitstream
+FSBL : Load BIF artifacts into DDR\n- boot.scr\n- system.dtb\n- zImage\n- u-boot.bin\n- uInitrd
+FSBL --> UBoot : Jump to 0x04000000
+
+UBoot : Execute boot.scr
+UBoot : Patch DTB (memory node,\nMAC address, chosen{}, etc.)
+UBoot : Prepare kernel args\n(zImage, FDT, initrd)
+UBoot --> OpteeOs : bootm 0x10000000
+
+OpteeOs : Setup secure-monitor
+OpteeOs : Configure hardware \nfor secure operations
+OpteeOs : SMC
+OpteeOs : (Monitor) Set SCR.NS=1
+OpteeOs --> LinuxKernel : set CPU in Svc mode \nand jump to 0x03000000
+
+
+LinuxKernel : Parse DTB
+LinuxKernel : Load/init initramfs
+LinuxKernel : init drivers
+
+LinuxKernel --> Init
+@enduml

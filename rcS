@@ -4,3 +4,11 @@
 mount -t devtmpfs none /dev
 mount -t sysfs sysfs /sys
 mount -t debugfs none /sys/kernel/debug
+mount -t proc proc /proc
+mount -t tmpfs tmpfs /tmp
+mount -t tmpfs tmpfs /run
+
+# run tee supplicant if present
+if [ -f /sbin/tee-supplicant ]; then 
+    tee-supplicant -d
+fi

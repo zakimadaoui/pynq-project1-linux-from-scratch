@@ -1,0 +1,26 @@
+@startuml
+title Simple Zynq-7000 Boot Flow
+
+[*] --> BootROM
+
+BootROM : Load FSBL into OCM\nand execute
+
+BootROM --> FSBL : Handoff
+
+FSBL : Init clocks, DDR, MIO
+FSBL : Load PL bitstream
+FSBL : Load BIF artifacts into DDR\n- boot.scr\n- system.dtb\n- zImage\n- u-boot.bin\n- uInitrd
+FSBL --> UBoot : Jump to 0x04000000
+
+UBoot : Execute boot.scr
+UBoot : Patch DTB (memory node,\nMAC address, chosen{}, etc.)
+UBoot : Prepare kernel args\n(zImage, FDT, initrd)
+UBoot --> LinuxKernel : bootz 0x03000000
+
+LinuxKernel : Parse DTB
+LinuxKernel : Load/init initramfs
+LinuxKernel : init drivers
+
+LinuxKernel --> Init
+
+@enduml

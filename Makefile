@@ -77,8 +77,6 @@ kernel: artifacts
 
 # configure the kernel
 	cd linux-xlnx; git reset && git restore . && git clean -f
-# cp patches/zynq_pynqz2_linux_defconfig linux-xlnx/arch/arm/configs/zynq_pynqz2_linux_defconfig
-# make -C linux-xlnx SHELL=/bin/bash ARCH=arm zynq_pynqz2_linux_defconfig
 	make -C linux-xlnx SHELL=/bin/bash ARCH=arm xilinx_zynq_defconfig
 	make -j8 -C linux-xlnx SHELL=/bin/bash ARCH=arm
 	cd artifacts && cp ../linux-xlnx/arch/arm/boot/Image  .
@@ -99,11 +97,53 @@ kernel_tee: artifacts
 kernel_clean: 
 	cd linux-xlnx && make SHELL=/bin/bash clean
 
-rootfs:
+optee_client:
+	@if [ ! -d optee_client ]; then git clone https://github.com/OP-TEE/optee_client ; fi
+	cd optee_client &&\
+	mkdir -p build &&\
+	cd build && cmake -DCMAKE_C_COMPILER=arm-linux-gnueabihf-gcc -DCMAKE_INSTALL_PREFIX=$(realpath artifacts/initramfs) .. &&\
+	make -j$(nproc) &&\
+	make install 
+
+optee_examples:
+	@if [ ! -d optee_examples ]; then git clone https://github.com/linaro-swg/optee_examples.git ; fi
+	make -C optee_examples examples \
+						   CROSS_COMPILE=arm-linux-gnueabihf- \
+						   TEEC_EXPORT=$(realpath artifacts/initramfs) TA_DEV_KIT_DIR=$(realpath optee_os/out/arm/export-ta_arm32)
+	make -C optee_examples prepare-for-rootfs
+	cp optee_examples/out/ca/* artifacts/initramfs/usr/bin
+	mkdir -p artifacts/initramfs/lib/optee_armtz && cp optee_examples/out/ta/* artifacts/initramfs/lib/optee_armtz/
+	mkdir -p artifacts/initramfs/lib/optee_armtz/plugins && cp optee_examples/out/plugins/* artifacts/initramfs/lib/optee_armtz/plugins/
+
+busybox:
+	@if [ ! -d busybox ]; then git clone git://busybox.net/busybox.git ; fi
 	cp patches/busybox_simple_config busybox/configs/busybox_simple_defconfig
-	cd busybox && make SHELL=/bin/bash ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) busybox_simple_defconfig
-	cd busybox && make -j$(nproc) SHELL=/bin/bash ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE)
+	make -C busybox SHELL=/bin/bash ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) busybox_simple_defconfig
+	make -C busybox -j$(nproc) SHELL=/bin/bash ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE)
+	make -C busybox SHELL=/bin/bash ARCH=arm CROSS_COMPILE=${CROSS_COMPILE} CONFIG_PREFIX=$(realpath artifacts/initramfs) install
+	cd artifacts/initramfs && ln -s bin/busybox init
+
+rootfs:
 	./make_rootfs.sh
+	make busybox
+	make optee_client
+	make optee_examples
+# C runtime. TODO: add a way to downlod the arm gcc toolchain and copy thesese from there ...
+	cp -a \
+		/usr/arm-linux-gnueabihf/lib/ld-linux-armhf.so.3 \
+		/usr/arm-linux-gnueabihf/lib/libc.so.6 \
+		/usr/arm-linux-gnueabihf/lib/libpthread.so.0 \
+		/usr/arm-linux-gnueabihf/lib/libdl.so.2 \
+		/usr/arm-linux-gnueabihf/lib/librt.so.1 \
+		/usr/arm-linux-gnueabihf/lib/libm.so.6 \
+		artifacts/initramfs/lib/
+# C++ runtime
+	cp -a \
+		/usr/arm-linux-gnueabihf/lib/libstdc++.so.6* \
+		/usr/arm-linux-gnueabihf/lib/libgcc_s.so.1 \
+		artifacts/initramfs/lib/
+	./make_initramfs.sh
+
 
 rootfs_clean:
 	rm -rfv $(ROOTFS_DIR)
@@ -146,12 +186,10 @@ boot_tee_src:
 	mkimage -A arm -T script -C none -d boot_tee.txt artifacts/boot_tee.scr
 
 # non-secure development image:
-dev_image: dtb kernel rootfs uboot boot_src bootgen
+simple_image: dtb kernel rootfs uboot boot_src bootgen
 
 # trust-zone enabled image:
 optee_image: optee dtb_optee kernel_tee rootfs uboot boot_tee_src bootgen_optee
-	# TODO: build and add tee-suplicant and linux userspace support.
-	# TODO: build and add trustlets
 
 # trust-zone enabled image with secure-boot:
 # optee_image_secure:
@@ -159,4 +197,4 @@ optee_image: optee dtb_optee kernel_tee rootfs uboot boot_tee_src bootgen_optee
 clean: fsbl_clean uboot_clean rootfs_clean bootgen_clean dtb_clean
 	rm -rf artifacts
 	
-.PHONY: fsbl fsbl_clean uboot uboot_clean kernel kernel_clean rootfs rootfs_clean bootgen bootgen_clean clean ub_image dtb dtb_optee dtc optee_image kernel_tee boot_src boot_tee_src dev_image
+.PHONY: fsbl fsbl_clean uboot uboot_clean kernel kernel_clean rootfs rootfs_clean bootgen bootgen_clean clean ub_image dtb dtb_optee dtc optee_image kernel_tee boot_src boot_tee_src simple_image optee_client busybox optee_examples

@@ -14,3 +14,7 @@ busybox/
 busybox/*
 optee_os
 optee_os/*
+optee_client
+optee_client/*
+optee_examples
+optee_examples/*
