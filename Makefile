@@ -31,12 +31,12 @@ uboot: artifacts
 
 # patch u-boot to add support for pynq-z1 and pynq-z2
 	rm uboot_src/board/xilinx/zynq/zynq-pynqz2/ -rf
-	cd uboot_src; git reset && git restore . && git clean -f && git apply ../patches/add-pynq-z2-support-uboot-optee.patch
+	cd uboot_src; git reset && git restore . && git clean -f && git apply ../patches/add-pynq-z2-support-uboot.patch
 
 # copy customized u-boot configuration
 	cp patches/zynq_pynqz2_defconfig uboot_src/configs/zynq_pynqz2_defconfig
 	make -C uboot_src zynq_pynqz2_defconfig SHELL=/bin/bash
-# custom config is adopted from zynq default
+# custom config is adapted from zynq default
 # make -C uboot_src xilinx_zynq_virt_defconfig SHELL=/bin/bash
 	
 	export CROSS_COMPILE=arm-linux-gnueabihf- &&\
