@@ -18,4 +18,9 @@ optee_client
 optee_client/*
 optee_examples
 optee_examples/*
+xsct
+xsct/*
+gnu
+gnu/*
+device-tree/dts/*
 todo.md

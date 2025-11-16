@@ -48,8 +48,8 @@ This project provides a very simple makefile based buildsystem. But, before goin
 
 ### Host Dependencies:
 ```bash
-sudo apt install gcc-arm-linux-gnueabihf # and dependencies
-sudo apt install gcc-arm-none-eabi # and dependencies
+sudo apt install git wget
+sudo apt install gcc-arm-none-eabi
 sudo apt install bison flex openssl libssl-dev 
 sudo apt-get install uuid-dev libgnutls28-dev 
 sudo apt install pkg-config meson ninja-build # needed for building dtc
