@@ -88,7 +88,7 @@ dtb_clean:
 	rm artifacts/system.dts
 	rm artifacts/system.dtb
 
-kernel: artifacts
+kernel: artifacts gnu_toolchain
 	@if [ ! -d linux-xlnx ]; then git clone https://github.com/Xilinx/linux-xlnx.git ; fi
 
 # configure the kernel
@@ -155,13 +155,16 @@ rootfs_optee:
 	make optee_examples
 	./make_initramfs.sh
 
-bootgen: 
-	cp device-tree/simple_pynqz2_wrapper.bit artifacts/bitstream.bit
-	export PATH=${PATH}:/home/zaki/tools/Xilinx/Vitis/2024.2/bin/ && bootgen -image image.bif -o artifacts/BOOT.bin -w
+bootgen_bin:
+	@if [ ! -f bootgen/bootgen ]; then git clone https://github.com/Xilinx/bootgen.git && cd bootgen && make CROSS_COMPILE=""; fi
 
-bootgen_optee:
+bootgen: bootgen_bin
 	cp device-tree/simple_pynqz2_wrapper.bit artifacts/bitstream.bit
-	export PATH=${PATH}:/home/zaki/tools/Xilinx/Vitis/2024.2/bin/ && bootgen -image optee_image.bif -o artifacts/BOOT-optee.bin -w
+	./bootgen/bootgen -image image.bif -o artifacts/BOOT.bin -w
+
+bootgen_optee: bootgen_bin
+	cp device-tree/simple_pynqz2_wrapper.bit artifacts/bitstream.bit
+	./bootgen/bootgen -image optee_image.bif -o artifacts/BOOT-optee.bin -w
 
 optee:
 	@if [ ! -d optee_os ]; then git clone https://github.com/OP-TEE/optee_os.git ; fi
@@ -201,4 +204,4 @@ optee_image: fsbl uboot boot_tee_src optee dtb_optee kernel_tee rootfs_optee boo
 clean: fsbl_clean uboot_clean kernel_clean dtb_clean optee_clean
 	rm -rf artifacts
 	
-.PHONY: fsbl fsbl_clean uboot uboot_clean kernel kernel_clean rootfs bootgen clean ub_image dtb dtb_optee dtc optee_image kernel_tee boot_src boot_tee_src simple_image optee_client busybox optee_examples glibc gnu_toolchain rootfs_optee optee_clean
+.PHONY: fsbl fsbl_clean uboot uboot_clean kernel kernel_clean rootfs bootgen clean ub_image dtb dtb_optee dtc optee_image kernel_tee boot_src boot_tee_src simple_image optee_client busybox optee_examples glibc gnu_toolchain rootfs_optee optee_clean bootgen_bin

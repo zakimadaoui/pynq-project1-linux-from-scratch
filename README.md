@@ -277,6 +277,16 @@ https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842482/Device+Tree+Tips
 https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842385/How+to+format+SD+card+for+SD+boot
 
 
+### OPTEE resources
+- https://optee.readthedocs.io/en/latest/building/gits/optee_os.html
+- https://optee.readthedocs.io/en/latest/building/gits/optee_client.html
+- https://optee.readthedocs.io/en/latest/building/gits/optee_examples/optee_examples.html
+- https://optee.readthedocs.io/en/latest/building/trusted_applications.html
+- https://optee.readthedocs.io/en/latest/building/optee_with_rust.html
+
+### Linux from scratch
+I found this resource after finishing this whole project :), but well, it has great infromation, so here it is: https://www.linuxfromscratch.org/
+
 ## QEMU
 To test u-boot
 

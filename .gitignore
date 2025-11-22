@@ -22,5 +22,7 @@ xsct
 xsct/*
 gnu
 gnu/*
+bootgen
+bootgen/*
 device-tree/dts/*
 todo.md
